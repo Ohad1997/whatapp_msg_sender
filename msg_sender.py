@@ -77,7 +77,7 @@ def search_by_phone(phone_num):
         index=0
         if len(phone_elem)>1:
             index=1
-            print("messaging yourself is a sign of narcisistic behavior")
+            print("messaging yourself is a sign of narcissistic behavior")
         if phone_partial_search_disabled:
             real_p_num = re.search('&u=(.*)%40', phone_elem[index].get_attribute('src')).group(1)
             if(real_p_num!=phone_num):
