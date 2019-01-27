@@ -16,9 +16,9 @@ options.add_argument("user-data-dir=selenium")
 browser = webdriver.Chrome('chromedriver', chrome_options=options)
 wait = WebDriverWait(browser, 30)
 #------------------------------#
-name_partial_search_disabled=False
+name_partial_search_disabled=True
 phone_partial_search_disabled=False
-contact_list=['name or phone number']
+contact_list=['name']
 #------------------------------#
 
 
@@ -43,34 +43,36 @@ def api_search(phone_num):
         click(bigB)
         wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "div.RLfQR")))
         browser.find_elements_by_xpath('//*[@id="main"]/footer/div[1]/div[2]/div/div[2]')[0]
-        return None , 3
+        return None , 3 #number retrieved with api
     except Exception:
         print(f"phone number: {phone_num} is not valid")
         elem=browser.find_element_by_class_name("_1WZqU")
         click(elem)
-        time.sleep(0.5)
         return None, 0
 
 
+# makes sure only numeric values are present in the phone number
 def unify_phone_num(phone_num):
-    dic=['+','-',' ','(',')']
-    for ch in dic:
-        phone_num = phone_num.replace(ch, '')
+    if not phone_num.isnumeric():
+        dic=['+','-',' ','(',')']
+        for ch in dic:
+            phone_num = phone_num.replace(ch, '')
     if phone_num[0]=='0' and len(phone_num)>1:
         phone_num = phone_num[1:]
     return phone_num
 
 
+# use the search form if no matches found in source
 def search_for(contact):
     try:
         search = browser.find_element_by_class_name("jN-F5")
         search.clear()
         search.send_keys(contact)
-        time.sleep(0.5)
     except Exception as e:
         print(e)
 
 
+# find matching phone in source
 def search_by_phone(phone_num):
     try:
         phone_elem = browser.find_elements_by_xpath(f"//img[contains(@src,'{phone_num+ '%40' + 'c'}')]")
@@ -87,6 +89,7 @@ def search_by_phone(phone_num):
         return None
 
 
+# find matching contact in source
 def search_by_contact(contact):
     try:
         con_elem = browser.find_element_by_xpath(f"//span[contains(translate(normalize-space(.), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '{contact}')][@class='_1wjpf']")
@@ -99,27 +102,40 @@ def search_by_contact(contact):
         return None
 
 
+# find the contact via source/search or api
 def ret_contact(contact):
     try:
         reset_search = browser.find_element_by_class_name("_1M3wR")
         click(reset_search)
-        time.sleep(0.5)
+        while True:
+            try:
+                browser.find_element_by_xpath('//span[@data-icon="search"]')
+                break
+            except Exception:
+                pass
     except Exception:
         pass
     phone_num = unify_phone_num(contact)
     if phone_num.isnumeric():
+        # search number in source
         ret=search_by_phone(phone_num)
         if ret:
             return ret,2
+        # search number in search box
         search_for(phone_num)
+        # search number in source again
         ret=search_by_contact(phone_num)
         if ret:
             return ret,2
+        # number not in contacts, fire up api
         return api_search(phone_num)
+    # search contact in source
     ret=search_by_contact(contact)
     if ret:
-        return ret,1  
+        return ret,1
+    # search contact in search box  
     search_for(contact)  
+    # search contact in source again
     ret=search_by_contact(contact)
     if ret:
         return ret,1
@@ -131,19 +147,23 @@ def main():
     browser.get("https://web.whatsapp.com/")
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "div.RLfQR")))
     for contact in contact_list:
-        contact=contact.lower()
-        con_elem, mType = ret_contact(contact)
-        if con_elem:
+        l_contact=contact.lower()
+        con_elem, mType = ret_contact(l_contact)
+        if con_elem: #press the contact in source(unless using api)
             click(con_elem)
         if mType:
-            if mType==1:
-                msg= f"This is a msg for {contact}"
+            if mType==1:# if contact name
+                msg= f"this is a test msg for {contact}"
                 send_msg(msg)
-            else:
+            else: #if phone number
                 msg= "This is a test msg"
                 send_msg(msg)
-
-    time.sleep(0.5)
+            #wait for message to send
+            while True:
+                try:
+                    browser.find_element_by_xpath('//span[@data-icon="msg-time"]')
+                except Exception:
+                    break
     browser.quit()
 
         
