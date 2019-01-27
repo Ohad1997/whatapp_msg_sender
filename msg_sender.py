@@ -3,7 +3,6 @@
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 import re
 
@@ -16,7 +15,7 @@ wait = WebDriverWait(browser, 30)
 #------------------------------#
 name_partial_search_disabled=True
 phone_partial_search_disabled=False
-contact_list=['name or phone number']
+contact_list=['name']
 #------------------------------#
 
 
