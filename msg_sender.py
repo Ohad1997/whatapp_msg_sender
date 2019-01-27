@@ -18,7 +18,7 @@ wait = WebDriverWait(browser, 30)
 #------------------------------#
 name_partial_search_disabled=True
 phone_partial_search_disabled=False
-contact_list=['name']
+contact_list=['name or phone number']
 #------------------------------#
 
 
@@ -92,7 +92,8 @@ def search_by_phone(phone_num):
 # find matching contact in source
 def search_by_contact(contact):
     try:
-        con_elem = browser.find_element_by_xpath(f"//span[contains(translate(normalize-space(.), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '{contact}')][@class='_1wjpf']")
+        con_elem = browser.find_element_by_xpath(f"//span[contains(translate(normalize-space(.), \
+         'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '{contact}')][@class='_1wjpf']")
         if name_partial_search_disabled:
             name_in_app= con_elem.get_attribute("title").lower()
             if contact!=name_in_app:
