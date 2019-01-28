@@ -15,7 +15,7 @@ wait = WebDriverWait(browser, 30)
 #------------------------------#
 name_partial_search_disabled=True
 phone_partial_search_disabled=False
-contact_list=['0549912191','23232424242','אבא']
+contact_list=['contact name or phone number']
 #------------------------------#
 
 
