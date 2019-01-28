@@ -6,17 +6,17 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import re
 
-#------------------------------#
+#-------------------------------#
 options = webdriver.ChromeOptions()
 options.add_argument('--log-level=3') 
 options.add_argument("user-data-dir=selenium") 
 browser = webdriver.Chrome('chromedriver', chrome_options=options)
 wait = WebDriverWait(browser, 30)
-#------------------------------#
+#-------------------------------#
 name_partial_search_disabled=True
 phone_partial_search_disabled=False
 contact_list=['contact name or phone number']
-#------------------------------#
+#-------------------------------#
 
 
 def send_msg(msg):
