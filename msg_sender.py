@@ -15,7 +15,7 @@ wait = WebDriverWait(browser, 30)
 #------------------------------#
 name_partial_search_disabled=True
 phone_partial_search_disabled=False
-contact_list=['name']
+contact_list=['0549912191','23232424242','אבא']
 #------------------------------#
 
 
@@ -24,7 +24,6 @@ def send_msg(msg):
     message.send_keys(msg)
     send_button = browser.find_elements_by_xpath('//*[@id="main"]/footer/div[1]/div[3]/button')[0]
     send_button.click()
-
 
 def click(con_elem):
     action = webdriver.common.action_chains.ActionChains(browser)
@@ -40,11 +39,16 @@ def api_search(phone_num):
         click(bigB)
         wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "div.RLfQR")))
         browser.find_elements_by_xpath('//*[@id="main"]/footer/div[1]/div[2]/div/div[2]')[0]
-        return None , 3 #number retrieved with api
+        return None , 3 # number retrieved with api
     except Exception:
         print(f"phone number: {phone_num} is not valid")
         elem=browser.find_element_by_class_name("_1WZqU")
         click(elem)
+        while True:
+            try: # wait for error popup to close
+                browser.find_element_by_class_name('_2vPAk')
+            except Exception:
+                break
         return None, 0
 
 
